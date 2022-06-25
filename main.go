@@ -34,7 +34,10 @@ func main() {
 	if subcommand == "sim" {
 		SimulateProgram(Program)
 	} else if subcommand == "com" {
-		CompileProgram(Program)
+		CompileProgram(Program, "output.asm")
+		utils.RunCMD("nasm", "-felf64", "output.asm", "", "")
+		utils.RunCMD("ld", "-0", "output", "output.o", "")
+
 	} else {
 		fmt.Printf("EROOR: unknown subcommand %v \n", subcommand)
 		os.Exit(1)
