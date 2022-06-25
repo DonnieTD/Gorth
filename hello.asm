@@ -4,6 +4,5 @@ segment .text
 global _start
 _start:
     mov rax, SYS_EXIT
-    mov rdi, 69
+    mov rdi, 0
     syscall
-    ret
