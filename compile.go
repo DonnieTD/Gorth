@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 
@@ -10,17 +11,17 @@ import (
 
 func CompileProgram(program []utils.Tuple, programName string) {
 	if COUNT_OPS != 4 {
-		errors.New("Update CURRENT_OPCOUNT CompileProgram")
+		fmt.Println("Update CURRENT_OPCOUNT CompileProgram")
 		return
 	}
 
-	if _, err := os.Stat("./"+programName); err == nil {
+	if _, err := os.Stat("./" + programName); err == nil {
 		e := os.Remove(programName)
 		if e != nil {
 			log.Fatal(e)
 		}
 	}
-	
+
 	file, err := os.OpenFile(programName, os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
@@ -32,21 +33,20 @@ func CompileProgram(program []utils.Tuple, programName string) {
 	datawriter.WriteString("global _start" + "\n")
 	datawriter.WriteString("_start:" + "\n")
 
-	for index, operation := range program {
-		fmt.Println(i, s)
-		switch operation.Optype{
-			case OP_PUSH:
-				datawriter.WriteString(fmt.Sprintf("    ;;-- push %d --", operation.Parameters) + "\n")
-				datawriter.WriteString(fmt.Sprintf("    push %d", operation.Parameters) + "\n")
-			case OP_PLUS:
-				datawriter.WriteString(fmt.Sprintf("    ;;-- plus %d --", operation.Parameters) + "\n")
-				datawriter.WriteString(fmt.Sprintf("    ;;-- TODO: not implemented -- %d", operation.Parameters) + "\n")
-			case OP_MINUS:
-				datawriter.WriteString(fmt.Sprintf("    ;;-- minus %d --", operation.Parameters) + "\n")
-				datawriter.WriteString(fmt.Sprintf("    ;;-- TODO: not implemented -- %d", operation.Parameters) + "\n")
-			case OP_DUMP:
-				datawriter.WriteString(fmt.Sprintf("    ;;-- dump %d --", operation.Parameters) + "\n")
-				datawriter.WriteString(fmt.Sprintf("    ;;-- TODO: not implemented -- %d", operation.Parameters) + "\n")
+	for _, operation := range program {
+		switch operation.Optype {
+		case OP_PUSH:
+			datawriter.WriteString(fmt.Sprintf("    ;;-- push %d --", operation.Parameters) + "\n")
+			datawriter.WriteString(fmt.Sprintf("    push %d", operation.Parameters) + "\n")
+		case OP_PLUS:
+			datawriter.WriteString(fmt.Sprintf("    ;;-- plus %d --", operation.Parameters) + "\n")
+			datawriter.WriteString(fmt.Sprintf("    ;;-- TODO: not implemented -- %d", operation.Parameters) + "\n")
+		case OP_MINUS:
+			datawriter.WriteString(fmt.Sprintf("    ;;-- minus %d --", operation.Parameters) + "\n")
+			datawriter.WriteString(fmt.Sprintf("    ;;-- TODO: not implemented -- %d", operation.Parameters) + "\n")
+		case OP_DUMP:
+			datawriter.WriteString(fmt.Sprintf("    ;;-- dump %d --", operation.Parameters) + "\n")
+			datawriter.WriteString(fmt.Sprintf("    ;;-- TODO: not implemented -- %d", operation.Parameters) + "\n")
 		}
 		datawriter.WriteString("    mov" + "\n")
 	}
