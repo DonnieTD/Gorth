@@ -6,8 +6,9 @@ import (
 )
 
 func RunCMD(cmd string) {
+	fmt.Println(cmd)
 	_, err := exec.Command("bash", "-c", cmd).Output()
     if err != nil {
-        fmt.Println("some error found")
+        fmt.Println("Error running command: "+cmd)
     }
 }

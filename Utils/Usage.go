@@ -2,8 +2,8 @@ package utils
 
 import "fmt"
 
-func Usage() {
-	fmt.Println("Usage: gorth <SUBCOMMAND> [ARGS]")
+func Usage(programName string) {
+	fmt.Printf("Usage: %s <SUBCOMMAND> [ARGS]\n",programName)
 	fmt.Println("")
 	fmt.Println("SUBCOMMANDS:")
 	fmt.Println("    sim        Simulate the program")
