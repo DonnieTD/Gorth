@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-
 	utils "github.com/DonnieTD/Gorth/Utils"
 )
 
@@ -35,9 +34,8 @@ func main() {
 		SimulateProgram(Program)
 	} else if subcommand == "com" {
 		CompileProgram(Program, "output.asm")
-		utils.RunCMD("nasm", "-felf64", "output.asm", "", "")
-		utils.RunCMD("ld", "-0", "output", "output.o", "")
-
+		utils.RunCMD("nasm -felf64 output.asm")
+		utils.RunCMD("ld -o output output.o")
 	} else {
 		fmt.Printf("EROOR: unknown subcommand %v \n", subcommand)
 		os.Exit(1)
