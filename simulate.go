@@ -8,7 +8,7 @@ import (
 )
 
 func SimulateProgram(program []utils.Tuple) {
-	if COUNT_OPS != CURRENT_OPCOUNT {
+	if COUNT_OPS != 4 {
 		fmt.Println("Update CURRENT_OPCOUNT")
 		return
 	}
