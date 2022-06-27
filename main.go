@@ -3,20 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+
 	utils "github.com/DonnieTD/Gorth/Utils"
 )
-
-// TODO: unhardcode program
-var Program = []utils.Tuple{
-	Push(34),
-	Push(35),
-	Plus(),
-	Dump(),
-	Push(500),
-	Push(80),
-	Minus(),
-	Dump(),
-}
 
 func main() {
 
@@ -37,6 +26,7 @@ func main() {
 			fmt.Println("")
 			os.Exit(1)
 		}
+		Program := LoadProgram(os.Args[2])
 		SimulateProgram(Program)
 	} else if subcommand == "com" {
 		if len(os.Args) < 3 {
@@ -45,6 +35,7 @@ func main() {
 			fmt.Println("")
 			os.Exit(1)
 		}
+		Program := LoadProgram(os.Args[2])
 		CompileProgram(Program, "output.asm")
 		utils.RunCMD("nasm -felf64 output.asm")
 		utils.RunCMD("ld -o output output.o")

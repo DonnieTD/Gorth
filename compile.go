@@ -6,13 +6,13 @@ import (
 	"log"
 	"os"
 
+	optypes "github.com/DonnieTD/Gorth/OpTypes"
 	utils "github.com/DonnieTD/Gorth/Utils"
 )
 
 func CompileProgram(program []utils.Tuple, programName string) {
-	if COUNT_OPS != 4 {
-		fmt.Println("Update CURRENT_OPCOUNT CompileProgram")
-		return
+	if optypes.COUNT_OPS != 4 {
+		panic("Update CURRENT_OPCOUNT CompileProgram")
 	}
 
 	if _, err := os.Stat("./" + programName); err == nil {
@@ -71,23 +71,23 @@ func CompileProgram(program []utils.Tuple, programName string) {
 
 	for _, operation := range program {
 		switch operation.Optype {
-		case OP_PUSH:
+		case optypes.OP_PUSH:
 			datawriter.WriteString(fmt.Sprintf("    ;;-- push %d --", operation.Parameters) + "\n")
 			datawriter.WriteString(fmt.Sprintf("    push %d", operation.Parameters) + "\n")
-		case OP_PLUS:
+		case optypes.OP_PLUS:
 			datawriter.WriteString("    ;;-- plus %d -- \n")
 			datawriter.WriteString("    pop rax \n")
 			datawriter.WriteString("    pop rbx \n")
 			datawriter.WriteString("    add rax, rbx \n")
 			datawriter.WriteString("    push rax \n")
 
-		case OP_MINUS:
+		case optypes.OP_MINUS:
 			datawriter.WriteString("    ;;-- minus %d -- \n")
 			datawriter.WriteString("    pop rax \n")
 			datawriter.WriteString("    pop rbx \n")
 			datawriter.WriteString("    sub rbx, rax \n")
 			datawriter.WriteString("    push rbx \n")
-		case OP_DUMP:
+		case optypes.OP_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")
 			datawriter.WriteString("    call dump\n")
