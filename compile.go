@@ -10,28 +10,7 @@ import (
 	utils "github.com/DonnieTD/Gorth/Utils"
 )
 
-func CompileProgram(program []utils.Tuple, programName string) {
-	if optypes.COUNT_OPS != 4 {
-		panic("Update CURRENT_OPCOUNT CompileProgram")
-	}
-
-	if _, err := os.Stat("./" + programName); err == nil {
-		e := os.Remove(programName)
-		if e != nil {
-			log.Fatal(e)
-		}
-	}
-
-	file, err := os.OpenFile(programName, os.O_CREATE|os.O_WRONLY, 0644)
-
-	if err != nil {
-		log.Fatalf("failed creating file: %s", err)
-	}
-
-	datawriter := bufio.NewWriter(file)
-
-	datawriter.WriteString("segment .text" + "\n")
-
+func GenerateAssemblyForDump(datawriter *bufio.Writer) {
 	datawriter.WriteString("dump:\n")
 	datawriter.WriteString("    mov     r9, -3689348814741910323\n")
 	datawriter.WriteString("    sub     rsp, 40\n")
@@ -65,10 +44,30 @@ func CompileProgram(program []utils.Tuple, programName string) {
 	datawriter.WriteString("    syscall\n")
 	datawriter.WriteString("    add     rsp, 40\n")
 	datawriter.WriteString("    ret\n")
+}
+func CompileProgram(program []utils.Tuple, programName string) {
+	if optypes.COUNT_OPS != 4 {
+		panic("Update CURRENT_OPCOUNT CompileProgram")
+	}
 
+	if _, err := os.Stat("./" + programName); err == nil {
+		e := os.Remove(programName)
+		if e != nil {
+			log.Fatal(e)
+		}
+	}
+
+	file, err := os.OpenFile(programName, os.O_CREATE|os.O_WRONLY, 0644)
+
+	if err != nil {
+		log.Fatalf("failed creating file: %s", err)
+	}
+
+	datawriter := bufio.NewWriter(file)
+	datawriter.WriteString("segment .text" + "\n")
+	GenerateAssemblyForDump(datawriter)
 	datawriter.WriteString("global _start" + "\n")
 	datawriter.WriteString("_start:" + "\n")
-
 	for _, operation := range program {
 		switch operation.Optype {
 		case optypes.OP_PUSH:
@@ -80,7 +79,6 @@ func CompileProgram(program []utils.Tuple, programName string) {
 			datawriter.WriteString("    pop rbx \n")
 			datawriter.WriteString("    add rax, rbx \n")
 			datawriter.WriteString("    push rax \n")
-
 		case optypes.OP_MINUS:
 			datawriter.WriteString("    ;;-- minus %d -- \n")
 			datawriter.WriteString("    pop rax \n")
@@ -93,11 +91,9 @@ func CompileProgram(program []utils.Tuple, programName string) {
 			datawriter.WriteString("    call dump\n")
 		}
 	}
-
 	datawriter.WriteString("    mov rax, 60" + "\n")
 	datawriter.WriteString("    mov rdi, 0" + "\n")
 	datawriter.WriteString("    syscall" + "\n")
-
 	datawriter.Flush()
 	file.Close()
 }
