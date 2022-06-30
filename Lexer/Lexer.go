@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"unicode"
 )
@@ -58,37 +59,51 @@ func (lex *Lexer) LoadProgram() {
 }
 
 func (lex *Lexer) TextToToken(text string) Token {
+	if COUNT_TOKENS != 5 {
+		abs, err := filepath.Abs("./Lexer/Lexer.go")
+		if err == nil {
+			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT TextToToken() \n", abs)
+		}
+		os.Exit(1)
+	}
 	switch text {
 	case ".":
 		return Token{
-			Position:   lex.Cursor - 1,
+			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_DUMP,
 			Parameter:  nil,
 		}
 	case "+":
 		return Token{
-			Position:   lex.Cursor - 1,
+			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_PLUS,
 			Parameter:  nil,
 		}
 	case "-":
 		return Token{
-			Position:   lex.Cursor - 1,
+			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_MINUS,
+			Parameter:  nil,
+		}
+	case "=":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_EQUALS,
 			Parameter:  nil,
 		}
 	default:
 		// HERE WE MUST TEST IF THIS IS WORTHY OF A NUMBER CONVERSION BEFORE DOING SO
 		tokenInt, err := strconv.Atoi(text)
 		if err != nil {
-			fmt.Printf("Error: Invalid NUMBER at %v:%v \n", lex.LineNumber+1, lex.Cursor+1-(len(text)-1))
+			fmt.Printf("Error: Invalid NUMBER at %v:%v \n", lex.LineNumber+1, lex.Cursor-(len(text)-1)+1)
 			os.Exit(1)
 		}
 		return Token{
-			Position:   lex.Cursor - (len(text) - 1),
+			Position:   lex.Cursor - len(text),
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_PUSH,
 			Parameter:  tokenInt,

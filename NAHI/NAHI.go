@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"reflect"
 
 	lexer "github.com/DonnieTD/NAH/Lexer"
@@ -52,8 +53,11 @@ func GenerateAssemblyForDump(datawriter *bufio.Writer) {
 }
 
 func (n *NAH) Compile() {
-	if lexer.COUNT_TOKENS != 4 {
-		fmt.Println("Update CURRENT_OPCOUNT CompileProgram")
+	if lexer.COUNT_TOKENS != 5 {
+		abs, err := filepath.Abs("./NAHI/NAHI.go")
+		if err == nil {
+			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT Compile() \n", abs)
+		}
 		os.Exit(1)
 	}
 
@@ -93,6 +97,13 @@ func (n *NAH) Compile() {
 			datawriter.WriteString("    pop rbx \n")
 			datawriter.WriteString("    sub rbx, rax \n")
 			datawriter.WriteString("    push rbx \n")
+		case lexer.TOKEN_EQUALS:
+			datawriter.WriteString("    ;;-- equals %d -- \n")
+			datawriter.WriteString("    mov rcx, 0 \n")
+			datawriter.WriteString("    pop rax \n")
+			datawriter.WriteString("    pop rbx \n")
+			datawriter.WriteString("    cmp rbx,rax  \n")
+			datawriter.WriteString("    cmove rcx,1  \n")
 		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")
@@ -111,8 +122,11 @@ func (n *NAH) Compile() {
 }
 
 func (n *NAH) Interpret() {
-	if lexer.COUNT_TOKENS != 4 {
-		fmt.Println("Update CURRENT_OPCOUNT SimulateProgram")
+	if lexer.COUNT_TOKENS != 5 {
+		abs, err := filepath.Abs("./NAHI/NAHI.go")
+		if err == nil {
+			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT Interpret() \n", abs)
+		}
 		os.Exit(1)
 	}
 
@@ -138,6 +152,18 @@ func (n *NAH) Interpret() {
 				a := a.(int)
 				b := b.(int)
 				programstack.Push(b - a)
+			}
+		case lexer.TOKEN_EQUALS:
+			a, _ := programstack.Pop()
+			b, _ := programstack.Pop()
+			if reflect.TypeOf(a).Kind() == reflect.Int && reflect.TypeOf(b).Kind() == reflect.Int {
+				a := a.(int)
+				b := b.(int)
+				if a == b {
+					programstack.Push(1)
+				} else {
+					programstack.Push(0)
+				}
 			}
 		case lexer.TOKEN_DUMP:
 			a, _ := programstack.Pop()
