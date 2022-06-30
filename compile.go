@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	optypes "github.com/DonnieTD/Gorth/OpTypes"
+	lexer "github.com/DonnieTD/Gorth/Lexer"
 	utils "github.com/DonnieTD/Gorth/Utils"
 )
 
@@ -45,9 +45,10 @@ func GenerateAssemblyForDump(datawriter *bufio.Writer) {
 	datawriter.WriteString("    add     rsp, 40\n")
 	datawriter.WriteString("    ret\n")
 }
-func CompileProgram(program []utils.Tuple, programName string) {
-	if optypes.COUNT_OPS != 4 {
-		panic("Update CURRENT_OPCOUNT CompileProgram")
+func CompileProgram(program []lexer.Token, programName string) {
+	if lexer.COUNT_TOKENS != 4 {
+		fmt.Println("Update CURRENT_OPCOUNT CompileProgram")
+		os.Exit(1)
 	}
 
 	if _, err := os.Stat("./" + programName); err == nil {
@@ -68,32 +69,37 @@ func CompileProgram(program []utils.Tuple, programName string) {
 	GenerateAssemblyForDump(datawriter)
 	datawriter.WriteString("global _start" + "\n")
 	datawriter.WriteString("_start:" + "\n")
-	for _, operation := range program {
-		switch operation.Optype {
-		case optypes.OP_PUSH:
-			datawriter.WriteString(fmt.Sprintf("    ;;-- push %d --", operation.Parameters) + "\n")
-			datawriter.WriteString(fmt.Sprintf("    push %d", operation.Parameters) + "\n")
-		case optypes.OP_PLUS:
+
+	for _, token := range program {
+		switch token.TokenType {
+		case lexer.TOKEN_PUSH:
+			datawriter.WriteString(fmt.Sprintf("    ;;-- push %d --", token.Parameter) + "\n")
+			datawriter.WriteString(fmt.Sprintf("    push %d", token.Parameter) + "\n")
+		case lexer.TOKEN_PLUS:
 			datawriter.WriteString("    ;;-- plus %d -- \n")
 			datawriter.WriteString("    pop rax \n")
 			datawriter.WriteString("    pop rbx \n")
 			datawriter.WriteString("    add rax, rbx \n")
 			datawriter.WriteString("    push rax \n")
-		case optypes.OP_MINUS:
+		case lexer.TOKEN_MINUS:
 			datawriter.WriteString("    ;;-- minus %d -- \n")
 			datawriter.WriteString("    pop rax \n")
 			datawriter.WriteString("    pop rbx \n")
 			datawriter.WriteString("    sub rbx, rax \n")
 			datawriter.WriteString("    push rbx \n")
-		case optypes.OP_DUMP:
+		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")
 			datawriter.WriteString("    call dump\n")
 		}
 	}
+
 	datawriter.WriteString("    mov rax, 60" + "\n")
 	datawriter.WriteString("    mov rdi, 0" + "\n")
 	datawriter.WriteString("    syscall" + "\n")
 	datawriter.Flush()
 	file.Close()
+
+	utils.RunCMD("nasm -felf64 output.asm")
+	utils.RunCMD("ld -o output output.o")
 }
