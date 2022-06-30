@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	lexer "github.com/DonnieTD/Gorth/Lexer"
-	utils "github.com/DonnieTD/Gorth/Utils"
+	lexer "github.com/DonnieTD/NAH/Lexer"
+	nahi "github.com/DonnieTD/NAH/NAHI"
+	utils "github.com/DonnieTD/NAH/Utils"
 )
 
 func main() {
@@ -27,20 +28,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	NAHI := NAH{
+	NAHI := nahi.NAH{
 		LEXER: lexer.New(os.Args[2]),
 	}
 
 	NAHI.LEXER.LoadProgram()
-	Program := NAHI.LEXER.Lex()
+	NAHI.LEXER.Lex()
 
-	if subcommand == "sim" {
-		SimulateProgram(Program)
-	} else if subcommand == "com" {
-		CompileProgram(Program, "output.asm")
+	if subcommand == "interpret" {
+		NAHI.Interpret()
+	} else if subcommand == "compile" {
+		NAHI.Compile()
 	} else {
 		fmt.Printf("EROOR: unknown subcommand %v \n", subcommand)
 		os.Exit(1)
 	}
-
 }

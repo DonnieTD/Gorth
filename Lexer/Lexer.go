@@ -9,11 +9,11 @@ import (
 )
 
 type Lexer struct {
-	cursor     int
-	lineNumber int
-	filePath   string
-	program    [][]rune
-	tokens     []Token
+	Cursor     int
+	LineNumber int
+	FilePath   string
+	Program    [][]rune
+	Tokens     []Token
 }
 
 type Token struct {
@@ -24,22 +24,22 @@ type Token struct {
 }
 
 func New(filePath string) *Lexer {
-	lex := &Lexer{
+	lex := Lexer{
 		// LINE NUMBERS AND COLS ARE 1 INDEXED IN REPORTING REMEMBER TO INCREMENT
-		cursor:     0,
-		lineNumber: 0,
-		filePath:   filePath,
-		program:    [][]rune{},
-		tokens:     []Token{},
+		Cursor:     0,
+		LineNumber: 0,
+		FilePath:   filePath,
+		Program:    [][]rune{},
+		Tokens:     []Token{},
 	}
 
 	lex.LoadProgram()
 
-	return lex
+	return &lex
 }
 
 func (lex *Lexer) LoadProgram() {
-	readFile, err := os.Open(lex.filePath)
+	readFile, err := os.Open(lex.FilePath)
 
 	if err != nil {
 		fmt.Println(err)
@@ -52,7 +52,7 @@ func (lex *Lexer) LoadProgram() {
 		fileLines = append(fileLines, []rune(fileScanner.Text()))
 	}
 
-	lex.program = fileLines
+	lex.Program = fileLines
 
 	readFile.Close()
 }
@@ -61,30 +61,35 @@ func (lex *Lexer) TextToToken(text string) Token {
 	switch text {
 	case ".":
 		return Token{
-			Position:   lex.cursor,
-			LineNumber: lex.lineNumber,
+			Position:   lex.Cursor - 1,
+			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_DUMP,
 			Parameter:  nil,
 		}
 	case "+":
 		return Token{
-			Position:   lex.cursor,
-			LineNumber: lex.lineNumber,
+			Position:   lex.Cursor - 1,
+			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_PLUS,
 			Parameter:  nil,
 		}
 	case "-":
 		return Token{
-			Position:   lex.cursor,
-			LineNumber: lex.lineNumber,
+			Position:   lex.Cursor - 1,
+			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_MINUS,
 			Parameter:  nil,
 		}
 	default:
-		tokenInt, _ := strconv.Atoi(text)
+		// HERE WE MUST TEST IF THIS IS WORTHY OF A NUMBER CONVERSION BEFORE DOING SO
+		tokenInt, err := strconv.Atoi(text)
+		if err != nil {
+			fmt.Printf("Error: Invalid NUMBER at %v:%v \n", lex.LineNumber+1, lex.Cursor+1-(len(text)-1))
+			os.Exit(1)
+		}
 		return Token{
-			Position:   lex.cursor,
-			LineNumber: lex.lineNumber,
+			Position:   lex.Cursor - (len(text) - 1),
+			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_PUSH,
 			Parameter:  tokenInt,
 		}
@@ -95,11 +100,11 @@ func (lex *Lexer) LexLine(text []rune) {
 	rune_buffer := []rune{}
 
 	for index, char := range text {
-		lex.cursor = index
+		lex.Cursor = index
 		if unicode.IsSpace(char) {
-			lex.cursor = index
+			lex.Cursor = index
 			if len(rune_buffer) > 0 {
-				lex.tokens = append(lex.tokens, lex.TextToToken(string(rune_buffer)))
+				lex.Tokens = append(lex.Tokens, lex.TextToToken(string(rune_buffer)))
 				rune_buffer = []rune{}
 				continue
 			} else {
@@ -108,7 +113,7 @@ func (lex *Lexer) LexLine(text []rune) {
 		} else {
 			rune_buffer = append(rune_buffer, char)
 			if index == len(text)-1 {
-				lex.tokens = append(lex.tokens, lex.TextToToken(string(rune_buffer)))
+				lex.Tokens = append(lex.Tokens, lex.TextToToken(string(rune_buffer)))
 				rune_buffer = []rune{}
 			}
 			continue
@@ -116,11 +121,9 @@ func (lex *Lexer) LexLine(text []rune) {
 	}
 }
 
-func (lex *Lexer) Lex() []Token {
-	for index, line := range lex.program {
-		lex.lineNumber = index
+func (lex *Lexer) Lex() {
+	for index, line := range lex.Program {
+		lex.LineNumber = index
 		lex.LexLine(line)
 	}
-
-	return lex.tokens
 }
