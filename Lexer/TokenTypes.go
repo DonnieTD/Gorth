@@ -9,5 +9,6 @@ const (
 	TOKEN_EQUALS = iota
 	TOKEN_IF     = iota
 	TOKEN_END    = iota
+	TOKEN_ELSE   = iota
 	COUNT_TOKENS = iota
 )

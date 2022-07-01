@@ -61,7 +61,7 @@ func (lex *Lexer) LoadProgram() {
 }
 
 func (lex *Lexer) CrossReferenceProgram() {
-	if COUNT_TOKENS != 7 {
+	if COUNT_TOKENS != 8 {
 		abs, err := filepath.Abs("./Lexer/Lexer.go")
 		if err == nil {
 			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT CrossReferenceProgran() NOTE ONLY BLOCKS NEED TO BE REFERENCED HERE IF ITS NOT A BLOCK INCREMENT AND MOVE ON \n", abs)
@@ -74,14 +74,25 @@ func (lex *Lexer) CrossReferenceProgram() {
 	for index, token := range lex.Tokens {
 		if token.TokenType == TOKEN_IF {
 			block_reference_stack.Push(index)
-		} else if token.TokenType == TOKEN_END {
+		} else if token.TokenType == TOKEN_ELSE {
 			if_addr, _ := block_reference_stack.Pop()
 			if_token_index := int((if_addr).(int))
 			lex.Tokens[if_token_index] = Token{
 				Position:   lex.Tokens[if_token_index].Position,
 				LineNumber: lex.Tokens[if_token_index].LineNumber,
 				TokenType:  TOKEN_IF,
-				// set the if parameter to the address of the end block
+				// set the if parameter to the address of the else block +1
+				Parameter: index,
+			}
+			block_reference_stack.Push(index)
+		} else if token.TokenType == TOKEN_END {
+			block_addr, _ := block_reference_stack.Pop()
+			block_token_index := int((block_addr).(int))
+			lex.Tokens[block_token_index] = Token{
+				Position:   lex.Tokens[block_token_index].Position,
+				LineNumber: lex.Tokens[block_token_index].LineNumber,
+				TokenType:  lex.Tokens[block_token_index].TokenType,
+				// set the parameter to the address of the end block
 				Parameter: index,
 			}
 		}
@@ -89,7 +100,7 @@ func (lex *Lexer) CrossReferenceProgram() {
 }
 
 func (lex *Lexer) TextToToken(text string) Token {
-	if COUNT_TOKENS != 7 {
+	if COUNT_TOKENS != 8 {
 		abs, err := filepath.Abs("./Lexer/Lexer.go")
 		if err == nil {
 			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT TextToToken() \n", abs)
@@ -130,6 +141,13 @@ func (lex *Lexer) TextToToken(text string) Token {
 			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_IF,
+			Parameter:  nil,
+		}
+	case "else":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_ELSE,
 			Parameter:  nil,
 		}
 	case "end":

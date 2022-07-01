@@ -134,7 +134,7 @@ func (n *NAH) Compile() {
 }
 
 func (n *NAH) Interpret() {
-	if lexer.COUNT_TOKENS != 7 {
+	if lexer.COUNT_TOKENS != 8 {
 		abs, err := filepath.Abs("./NAHI/NAHI.go")
 		if err == nil {
 			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT Interpret() \n", abs)
@@ -143,9 +143,8 @@ func (n *NAH) Interpret() {
 	}
 
 	var programstack utils.Stack
-	for t_token_index := 0; t_token_index < len(n.LEXER.Tokens)-1; t_token_index++ {
+	for t_token_index := 0; t_token_index < len(n.LEXER.Tokens); t_token_index++ {
 		token := n.LEXER.Tokens[t_token_index]
-
 		switch token.TokenType {
 		case lexer.TOKEN_PUSH:
 			programstack.Push(token.Parameter)
@@ -183,11 +182,13 @@ func (n *NAH) Interpret() {
 			// if false jump to end
 			if a == 0 {
 				t_token_index = token.Parameter.(int)
-				continue
 			}
 			// otherwise continue executing?
 		case lexer.TOKEN_END:
-
+			continue
+		case lexer.TOKEN_ELSE:
+			t_token_index = token.Parameter.(int)
+			continue
 		case lexer.TOKEN_DUMP:
 			a, _ := programstack.Pop()
 			fmt.Printf("%v \n", a)
