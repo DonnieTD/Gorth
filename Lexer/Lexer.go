@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"unicode"
+
+	utils "github.com/DonnieTD/NAH/Utils"
 )
 
 type Lexer struct {
@@ -58,8 +60,36 @@ func (lex *Lexer) LoadProgram() {
 	readFile.Close()
 }
 
+func (lex *Lexer) CrossReferenceProgram() {
+	if COUNT_TOKENS != 7 {
+		abs, err := filepath.Abs("./Lexer/Lexer.go")
+		if err == nil {
+			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT CrossReferenceProgran() NOTE ONLY BLOCKS NEED TO BE REFERENCED HERE IF ITS NOT A BLOCK INCREMENT AND MOVE ON \n", abs)
+		}
+		os.Exit(1)
+	}
+
+	var block_reference_stack utils.Stack
+
+	for index, token := range lex.Tokens {
+		if token.TokenType == TOKEN_IF {
+			block_reference_stack.Push(index)
+		} else if token.TokenType == TOKEN_END {
+			if_addr, _ := block_reference_stack.Pop()
+			if_token_index := int((if_addr).(int))
+			lex.Tokens[if_token_index] = Token{
+				Position:   lex.Tokens[if_token_index].Position,
+				LineNumber: lex.Tokens[if_token_index].LineNumber,
+				TokenType:  TOKEN_IF,
+				// set the if parameter to the address of the end block
+				Parameter: index,
+			}
+		}
+	}
+}
+
 func (lex *Lexer) TextToToken(text string) Token {
-	if COUNT_TOKENS != 5 {
+	if COUNT_TOKENS != 7 {
 		abs, err := filepath.Abs("./Lexer/Lexer.go")
 		if err == nil {
 			fmt.Printf("Error in: %v\nUpdate CURRENT_OPCOUNT TextToToken() \n", abs)
@@ -93,6 +123,20 @@ func (lex *Lexer) TextToToken(text string) Token {
 			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_EQUALS,
+			Parameter:  nil,
+		}
+	case "if":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_IF,
+			Parameter:  nil,
+		}
+	case "end":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_END,
 			Parameter:  nil,
 		}
 	default:
@@ -141,4 +185,5 @@ func (lex *Lexer) Lex() {
 		lex.LineNumber = index
 		lex.LexLine(line)
 	}
+	lex.CrossReferenceProgram()
 }
