@@ -122,10 +122,10 @@ func (n *NAH) Compile() {
 			datawriter.WriteString("    ;;-- greater than %d -- \n")
 			datawriter.WriteString("    mov rcx, 0 \n")
 			datawriter.WriteString("    mov rdx, 1 \n")
-			datawriter.WriteString("    pop rax \n")
 			datawriter.WriteString("    pop rbx \n")
+			datawriter.WriteString("    pop rax \n")
 			datawriter.WriteString("    cmp rax, rbx  \n")
-			datawriter.WriteString("    cmove rcx,rdx  \n")
+			datawriter.WriteString("    cmovg rcx,rdx  \n")
 			datawriter.WriteString("    push rcx  \n")
 		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
@@ -145,7 +145,7 @@ func (n *NAH) Compile() {
 }
 
 func (n *NAH) Interpret() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 8, "./NAHI/NAHI.go", "Interpret")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 10, "./NAHI/NAHI.go", "Interpret")
 
 	var programstack utils.Stack
 	for t_token_index := 0; t_token_index < len(n.LEXER.Tokens); {
@@ -200,6 +200,18 @@ func (n *NAH) Interpret() {
 		case lexer.TOKEN_DUMP:
 			a, _ := programstack.Pop()
 			fmt.Printf("%v \n", a)
+		case lexer.TOKEN_DUP:
+			a, _ := programstack.Pop()
+			programstack.Push(a)
+			programstack.Push(a)
+		case lexer.TOKEN_GREATER_THAN:
+			b, _ := programstack.Pop()
+			a, _ := programstack.Pop()
+			if a.(int) > b.(int) {
+				programstack.Push(1)
+			} else {
+				programstack.Push(0)
+			}
 		default:
 			fmt.Println("Unreachable")
 		}

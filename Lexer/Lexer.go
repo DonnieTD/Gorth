@@ -155,7 +155,6 @@ func (lex *Lexer) TextToToken(text string) Token {
 		}
 	default:
 		// HERE WE MUST TEST IF THIS IS WORTHY OF A NUMBER CONVERSION BEFORE DOING SO
-		fmt.Printf("%v \n", text)
 		tokenInt, err := strconv.Atoi(text)
 		if err != nil {
 			fmt.Printf("Error: Invalid NUMBER at %v:%v \n", lex.LineNumber+1, lex.Cursor-(len(text)-1)+1)
