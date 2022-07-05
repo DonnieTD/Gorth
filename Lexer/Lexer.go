@@ -65,7 +65,7 @@ func (lex *Lexer) LoadProgram() {
 //	it then finds that specific if and adds the
 func (lex *Lexer) CrossReferenceProgram() {
 	// NOTE ONLY BLOCKS NEED TO BE REFERENCED HERE IF ITS NOT A BLOCK INCREMENT AND MOVE ON
-	utils.CountTokensCheck(COUNT_TOKENS, 8, "./Lexer/Lexer.go", "CrossReferenceProgram")
+	utils.CountTokensCheck(COUNT_TOKENS, 10, "./Lexer/Lexer.go", "CrossReferenceProgram")
 
 	var block_reference_stack utils.Stack
 
@@ -88,7 +88,7 @@ func (lex *Lexer) CrossReferenceProgram() {
 }
 
 func (lex *Lexer) TextToToken(text string) Token {
-	utils.CountTokensCheck(COUNT_TOKENS, 8, "./Lexer/Lexer.go", "TextToToken")
+	utils.CountTokensCheck(COUNT_TOKENS, 10, "./Lexer/Lexer.go", "TextToToken")
 	switch text {
 	case ".":
 		return Token{
@@ -139,8 +139,23 @@ func (lex *Lexer) TextToToken(text string) Token {
 			TokenType:  TOKEN_END,
 			Parameter:  nil,
 		}
+	case "dup":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_DUP,
+			Parameter:  nil,
+		}
+	case ">":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_GREATER_THAN,
+			Parameter:  nil,
+		}
 	default:
 		// HERE WE MUST TEST IF THIS IS WORTHY OF A NUMBER CONVERSION BEFORE DOING SO
+		fmt.Printf("%v \n", text)
 		tokenInt, err := strconv.Atoi(text)
 		if err != nil {
 			fmt.Printf("Error: Invalid NUMBER at %v:%v \n", lex.LineNumber+1, lex.Cursor-(len(text)-1)+1)

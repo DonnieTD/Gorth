@@ -52,7 +52,7 @@ func GenerateAssemblyForDump(datawriter *bufio.Writer) {
 }
 
 func (n *NAH) Compile() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 8, "./NAHI/NAHI.go", "Compile")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 10, "./NAHI/NAHI.go", "Compile")
 
 	if _, err := os.Stat("./" + "output.asm"); err == nil {
 		e := os.Remove("output.asm")
@@ -113,6 +113,20 @@ func (n *NAH) Compile() {
 		case lexer.TOKEN_END:
 			datawriter.WriteString("    ;;-- end %d -- \n")
 			datawriter.WriteString(fmt.Sprintf("addr_%d: \n", token_index))
+		case lexer.TOKEN_DUP:
+			datawriter.WriteString("    ;;-- dup %d -- \n")
+			datawriter.WriteString("    pop rax \n")
+			datawriter.WriteString("    push rax \n")
+			datawriter.WriteString("    push rax \n")
+		case lexer.TOKEN_GREATER_THAN:
+			datawriter.WriteString("    ;;-- greater than %d -- \n")
+			datawriter.WriteString("    mov rcx, 0 \n")
+			datawriter.WriteString("    mov rdx, 1 \n")
+			datawriter.WriteString("    pop rax \n")
+			datawriter.WriteString("    pop rbx \n")
+			datawriter.WriteString("    cmp rax, rbx  \n")
+			datawriter.WriteString("    cmove rcx,rdx  \n")
+			datawriter.WriteString("    push rcx  \n")
 		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")
