@@ -1,11 +1,11 @@
 69 420  > if
-    1 .
+    1 dump
 else
-    0 .
+    0 dump
 end
 
 420 69  > if
-    1 .
+    1 dump
 else
-    0 .
+    0 dump
 end

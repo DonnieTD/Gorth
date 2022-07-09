@@ -1,5 +1,5 @@
 35 34 + 69 = if
-    61 .
+    61 dump
 else
-    402 .
+    402 dump
 end

@@ -51,8 +51,10 @@ func GenerateAssemblyForDump(datawriter *bufio.Writer) {
 	datawriter.WriteString("    ret\n")
 }
 
+const MEM_CAPACITY = 640_000
+
 func (n *NAH) Compile() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 12, "./NAHI/NAHI.go", "Compile")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 13, "./NAHI/NAHI.go:54", "Compile")
 
 	if _, err := os.Stat("./" + "output.asm"); err == nil {
 		e := os.Remove("output.asm")
@@ -137,6 +139,9 @@ func (n *NAH) Compile() {
 			datawriter.WriteString("    pop rax \n")
 			datawriter.WriteString("    test rax, rax \n")
 			datawriter.WriteString(fmt.Sprintf("    jz addr_%d \n", token.Parameter))
+		case lexer.TOKEN_MEM:
+			datawriter.WriteString("    ;;-- mem %d -- \n")
+			datawriter.WriteString("    push mem \n")
 		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")
@@ -144,9 +149,13 @@ func (n *NAH) Compile() {
 		}
 	}
 
-	datawriter.WriteString("    mov rax, 60" + "\n")
-	datawriter.WriteString("    mov rdi, 0" + "\n")
-	datawriter.WriteString("    syscall" + "\n")
+	datawriter.WriteString("    mov rax, 60 \n")
+	datawriter.WriteString("    mov rdi, 0 \n")
+	datawriter.WriteString("    syscall \n")
+
+	// Memory segment
+	datawriter.WriteString("segment .bss\n")
+	datawriter.WriteString(fmt.Sprintf("mem: resb %d \n", MEM_CAPACITY))
 	datawriter.Flush()
 	file.Close()
 

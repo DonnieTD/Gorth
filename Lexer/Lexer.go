@@ -65,7 +65,7 @@ func (lex *Lexer) LoadProgram() {
 //	it then finds that specific if and adds the
 func (lex *Lexer) CrossReferenceProgram() {
 	// NOTE ONLY BLOCKS NEED TO BE REFERENCED HERE IF ITS NOT A BLOCK INCREMENT AND MOVE ON
-	utils.CountTokensCheck(COUNT_TOKENS, 12, "./Lexer/Lexer.go", "CrossReferenceProgram")
+	utils.CountTokensCheck(COUNT_TOKENS, 13, "./Lexer/Lexer.go:66", "CrossReferenceProgram")
 
 	var block_reference_stack utils.Stack
 
@@ -99,9 +99,9 @@ func (lex *Lexer) CrossReferenceProgram() {
 }
 
 func (lex *Lexer) TextToToken(text string) Token {
-	utils.CountTokensCheck(COUNT_TOKENS, 12, "./Lexer/Lexer.go", "TextToToken")
+	utils.CountTokensCheck(COUNT_TOKENS, 13, "./Lexer/Lexer.go:101", "TextToToken")
 	switch text {
-	case ".":
+	case "dump":
 		return Token{
 			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
@@ -176,6 +176,13 @@ func (lex *Lexer) TextToToken(text string) Token {
 			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_DO,
+			Parameter:  nil,
+		}
+	case "mem":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_MEM,
 			Parameter:  nil,
 		}
 	default:

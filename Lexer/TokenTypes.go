@@ -14,5 +14,6 @@ const (
 	TOKEN_DUP          = iota
 	TOKEN_WHILE        = iota
 	TOKEN_DO           = iota
+	TOKEN_MEM          = iota
 	COUNT_TOKENS       = iota
 )
