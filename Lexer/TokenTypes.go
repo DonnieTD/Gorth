@@ -12,5 +12,7 @@ const (
 	TOKEN_ELSE         = iota
 	TOKEN_GREATER_THAN = iota
 	TOKEN_DUP          = iota
+	TOKEN_WHILE        = iota
+	TOKEN_DO           = iota
 	COUNT_TOKENS       = iota
 )

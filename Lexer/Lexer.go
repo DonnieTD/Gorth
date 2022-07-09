@@ -65,7 +65,7 @@ func (lex *Lexer) LoadProgram() {
 //	it then finds that specific if and adds the
 func (lex *Lexer) CrossReferenceProgram() {
 	// NOTE ONLY BLOCKS NEED TO BE REFERENCED HERE IF ITS NOT A BLOCK INCREMENT AND MOVE ON
-	utils.CountTokensCheck(COUNT_TOKENS, 10, "./Lexer/Lexer.go", "CrossReferenceProgram")
+	utils.CountTokensCheck(COUNT_TOKENS, 12, "./Lexer/Lexer.go", "CrossReferenceProgram")
 
 	var block_reference_stack utils.Stack
 
@@ -77,18 +77,29 @@ func (lex *Lexer) CrossReferenceProgram() {
 			if_token_index := int((if_addr).(int))
 			lex.Tokens[if_token_index].TokenType = TOKEN_IF
 			lex.Tokens[if_token_index].Parameter = index + 1
-
 			block_reference_stack.Push(index)
 		} else if token.TokenType == TOKEN_END {
 			block_addr, _ := block_reference_stack.Pop()
 			block_token_index := int((block_addr).(int))
-			lex.Tokens[block_token_index].Parameter = index
+			if lex.Tokens[block_token_index].TokenType == TOKEN_IF || lex.Tokens[block_token_index].TokenType == TOKEN_ELSE {
+				lex.Tokens[block_token_index].Parameter = index
+				lex.Tokens[index].Parameter = index + 1
+			} else if lex.Tokens[block_token_index].TokenType == TOKEN_DO {
+				lex.Tokens[index].Parameter = lex.Tokens[block_token_index].Parameter
+				lex.Tokens[block_token_index].Parameter = index + 1
+			}
+		} else if token.TokenType == TOKEN_WHILE {
+			block_reference_stack.Push(index)
+		} else if token.TokenType == TOKEN_DO {
+			while_ip, _ := block_reference_stack.Pop()
+			lex.Tokens[index].Parameter = while_ip
+			block_reference_stack.Push(index)
 		}
 	}
 }
 
 func (lex *Lexer) TextToToken(text string) Token {
-	utils.CountTokensCheck(COUNT_TOKENS, 10, "./Lexer/Lexer.go", "TextToToken")
+	utils.CountTokensCheck(COUNT_TOKENS, 12, "./Lexer/Lexer.go", "TextToToken")
 	switch text {
 	case ".":
 		return Token{
@@ -151,6 +162,20 @@ func (lex *Lexer) TextToToken(text string) Token {
 			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_GREATER_THAN,
+			Parameter:  nil,
+		}
+	case "while":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_WHILE,
+			Parameter:  nil,
+		}
+	case "do":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_DO,
 			Parameter:  nil,
 		}
 	default:

@@ -52,7 +52,7 @@ func GenerateAssemblyForDump(datawriter *bufio.Writer) {
 }
 
 func (n *NAH) Compile() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 10, "./NAHI/NAHI.go", "Compile")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 12, "./NAHI/NAHI.go", "Compile")
 
 	if _, err := os.Stat("./" + "output.asm"); err == nil {
 		e := os.Remove("output.asm")
@@ -74,6 +74,7 @@ func (n *NAH) Compile() {
 	datawriter.WriteString("_start:" + "\n")
 
 	for token_index, token := range n.LEXER.Tokens {
+		datawriter.WriteString(fmt.Sprintf("addr_%d: \n", token_index))
 		switch token.TokenType {
 		case lexer.TOKEN_PUSH:
 			datawriter.WriteString(fmt.Sprintf("    ;;-- push %d --", token.Parameter) + "\n")
@@ -109,10 +110,12 @@ func (n *NAH) Compile() {
 		case lexer.TOKEN_ELSE:
 			datawriter.WriteString("    ;;-- else -- \n")
 			datawriter.WriteString(fmt.Sprintf("    jmp addr_%d\n", token.Parameter))
-			datawriter.WriteString(fmt.Sprintf("addr_%d: \n", token_index+1))
 		case lexer.TOKEN_END:
 			datawriter.WriteString("    ;;-- end %d -- \n")
-			datawriter.WriteString(fmt.Sprintf("addr_%d: \n", token_index))
+			if token_index+1 != token.Parameter {
+				datawriter.WriteString(fmt.Sprintf("    jmp addr_%d\n", token.Parameter))
+			}
+			continue
 		case lexer.TOKEN_DUP:
 			datawriter.WriteString("    ;;-- dup %d -- \n")
 			datawriter.WriteString("    pop rax \n")
@@ -127,6 +130,13 @@ func (n *NAH) Compile() {
 			datawriter.WriteString("    cmp rax, rbx  \n")
 			datawriter.WriteString("    cmovg rcx,rdx  \n")
 			datawriter.WriteString("    push rcx  \n")
+		case lexer.TOKEN_WHILE:
+			datawriter.WriteString("    ;;-- while %d -- \n")
+		case lexer.TOKEN_DO:
+			datawriter.WriteString("    ;;-- do %d -- \n")
+			datawriter.WriteString("    pop rax \n")
+			datawriter.WriteString("    test rax, rax \n")
+			datawriter.WriteString(fmt.Sprintf("    jz addr_%d \n", token.Parameter))
 		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")
@@ -145,7 +155,7 @@ func (n *NAH) Compile() {
 }
 
 func (n *NAH) Interpret() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 10, "./NAHI/NAHI.go", "Interpret")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 12, "./NAHI/NAHI.go", "Interpret")
 
 	var programstack utils.Stack
 	for t_token_index := 0; t_token_index < len(n.LEXER.Tokens); {
@@ -192,7 +202,7 @@ func (n *NAH) Interpret() {
 			}
 			// otherwise continue executing?
 		case lexer.TOKEN_END:
-			t_token_index++
+			t_token_index = token.Parameter.(int)
 			continue
 		case lexer.TOKEN_ELSE:
 			t_token_index = token.Parameter.(int)
@@ -211,6 +221,19 @@ func (n *NAH) Interpret() {
 				programstack.Push(1)
 			} else {
 				programstack.Push(0)
+			}
+		case lexer.TOKEN_WHILE:
+			t_token_index++
+			continue
+		case lexer.TOKEN_DO:
+			a, _ := programstack.Pop()
+
+			if a.(int) == 0 {
+				t_token_index = token.Parameter.(int)
+				continue
+			} else {
+				t_token_index++
+				continue
 			}
 		default:
 			fmt.Println("Unreachable")
