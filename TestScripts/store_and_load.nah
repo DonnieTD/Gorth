@@ -4,6 +4,9 @@ mem 1 + 98 .
 mem 2 + 99 .
 
   
+
+
+
 mem 0 + // get the starting memory location for the char
 dup , // duplicate it and read the char
 1 + . // increment the string value turning "a" -> "b" etc and write back into memory
@@ -15,5 +18,3 @@ dup , // duplicate it and read the char
 mem 2 + // get the starting memory location for the char
 dup , // duplicate it and read the char
 1 + . // increment the string value turning "a" -> "b" etc and write back into memory
-
-

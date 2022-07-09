@@ -1,18 +1,18 @@
 package utils
 
 type Stack struct {
-	vals []interface{}
+	Vals []interface{}
 }
 
 func (s *Stack) Push(val interface{}) {
-	s.vals = append(s.vals, val)
+	s.Vals = append(s.Vals, val)
 }
 
 func (s *Stack) Pop() (interface{}, bool) {
-	if len(s.vals) == 0 {
+	if len(s.Vals) == 0 {
 		return nil, false
 	}
-	top := s.vals[len(s.vals)-1]
-	s.vals = s.vals[:len(s.vals)-1]
+	top := s.Vals[len(s.Vals)-1]
+	s.Vals = s.Vals[:len(s.Vals)-1]
 	return top, true
 }
