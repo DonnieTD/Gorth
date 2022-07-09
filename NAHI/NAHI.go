@@ -54,7 +54,7 @@ func GenerateAssemblyForDump(datawriter *bufio.Writer) {
 const MEM_CAPACITY = 640_000
 
 func (n *NAH) Compile() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 13, "./NAHI/NAHI.go:54", "Compile")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 15, "./NAHI/NAHI.go:54", "Compile")
 
 	if _, err := os.Stat("./" + "output.asm"); err == nil {
 		e := os.Remove("output.asm")
@@ -142,6 +142,17 @@ func (n *NAH) Compile() {
 		case lexer.TOKEN_MEM:
 			datawriter.WriteString("    ;;-- mem %d -- \n")
 			datawriter.WriteString("    push mem \n")
+		case lexer.TOKEN_STORE:
+			datawriter.WriteString("    ;;-- store %d -- \n")
+			datawriter.WriteString("    pop rbx \n")
+			datawriter.WriteString("    pop rax \n")
+			datawriter.WriteString("    mov [rax], bl \n")
+		case lexer.TOKEN_LOAD:
+			datawriter.WriteString("    ;;-- load %d -- \n")
+			datawriter.WriteString("    pop rax \n")
+			datawriter.WriteString("    xor rbx,rbx \n") //clean rbx
+			datawriter.WriteString("    mov bl, [rax]\n")
+			datawriter.WriteString("    push rbx \n")
 		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")

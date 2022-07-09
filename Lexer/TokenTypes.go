@@ -15,5 +15,7 @@ const (
 	TOKEN_WHILE        = iota
 	TOKEN_DO           = iota
 	TOKEN_MEM          = iota
+	TOKEN_LOAD         = iota
+	TOKEN_STORE        = iota
 	COUNT_TOKENS       = iota
 )

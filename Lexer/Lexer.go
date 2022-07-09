@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"unicode"
 
 	utils "github.com/DonnieTD/NAH/Utils"
@@ -65,7 +66,7 @@ func (lex *Lexer) LoadProgram() {
 //	it then finds that specific if and adds the
 func (lex *Lexer) CrossReferenceProgram() {
 	// NOTE ONLY BLOCKS NEED TO BE REFERENCED HERE IF ITS NOT A BLOCK INCREMENT AND MOVE ON
-	utils.CountTokensCheck(COUNT_TOKENS, 13, "./Lexer/Lexer.go:66", "CrossReferenceProgram")
+	utils.CountTokensCheck(COUNT_TOKENS, 15, "./Lexer/Lexer.go:66", "CrossReferenceProgram")
 
 	var block_reference_stack utils.Stack
 
@@ -99,7 +100,7 @@ func (lex *Lexer) CrossReferenceProgram() {
 }
 
 func (lex *Lexer) TextToToken(text string) Token {
-	utils.CountTokensCheck(COUNT_TOKENS, 13, "./Lexer/Lexer.go:101", "TextToToken")
+	utils.CountTokensCheck(COUNT_TOKENS, 15, "./Lexer/Lexer.go:101", "TextToToken")
 	switch text {
 	case "dump":
 		return Token{
@@ -185,6 +186,20 @@ func (lex *Lexer) TextToToken(text string) Token {
 			TokenType:  TOKEN_MEM,
 			Parameter:  nil,
 		}
+	case ".":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_STORE,
+			Parameter:  nil,
+		}
+	case ",":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_LOAD,
+			Parameter:  nil,
+		}
 	default:
 		// HERE WE MUST TEST IF THIS IS WORTHY OF A NUMBER CONVERSION BEFORE DOING SO
 		tokenInt, err := strconv.Atoi(text)
@@ -229,7 +244,13 @@ func (lex *Lexer) LexLine(text []rune) {
 func (lex *Lexer) Lex() {
 	for index, line := range lex.Program {
 		lex.LineNumber = index
-		lex.LexLine(line)
+		// add single line comments
+		if strings.Contains(string(line), "//") {
+			lineWithoutComment := []rune(strings.Split(string(line), "//")[0])
+			lex.LexLine(lineWithoutComment)
+		} else {
+			lex.LexLine(line)
+		}
 	}
 	lex.CrossReferenceProgram()
 }
