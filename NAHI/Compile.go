@@ -11,7 +11,7 @@ import (
 )
 
 func (n *NAH) Compile() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 17, "./NAHI/Compile.go:13", "Compile")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 26, "./NAHI/Compile.go:13", "Compile")
 
 	if _, err := os.Stat("./" + "output.asm"); err == nil {
 		e := os.Remove("output.asm")
@@ -126,7 +126,65 @@ func (n *NAH) Compile() {
 			datawriter.WriteString("    ;;-- dump %d -- \n")
 			datawriter.WriteString("    pop rdi \n")
 			datawriter.WriteString("    call dump\n")
+		case lexer.TOKEN_2DUP:
+			datawriter.WriteString("    ;; -- 2dup -- \n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    pop rax\n")
+			datawriter.WriteString("    push rax\n")
+			datawriter.WriteString("    push rbx\n")
+			datawriter.WriteString("    push rax\n")
+			datawriter.WriteString("    push rbx\n")
+		case lexer.TOKEN_LESS_THAN:
+			datawriter.WriteString("    ;; -- less than --\n")
+			datawriter.WriteString("    mov rcx, 0\n")
+			datawriter.WriteString("    mov rdx, 1\n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    pop rax\n")
+			datawriter.WriteString("    cmp rax, rbx\n")
+			datawriter.WriteString("    cmovl rcx, rdx\n")
+			datawriter.WriteString("    push rcx\n")
+		case lexer.TOKEN_SWAP:
+			datawriter.WriteString("    ;; -- swap --\n")
+			datawriter.WriteString("    pop rax\n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    push rax\n")
+			datawriter.WriteString("    push rbx\n")
+		case lexer.TOKEN_DROP:
+			datawriter.WriteString("    ;; -- drop --\n")
+			datawriter.WriteString("    pop rax\n")
+		case lexer.TOKEN_SHL:
+			datawriter.WriteString("    ;; -- shl --\n")
+			datawriter.WriteString("    pop rcx\n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    shl rbx, cl\n")
+			datawriter.WriteString("    push rbx\n")
+		case lexer.TOKEN_SHR:
+			datawriter.WriteString("    ;; -- shr --\n")
+			datawriter.WriteString("    pop rcx\n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    shr rbx, cl\n")
+			datawriter.WriteString("    push rbx\n")
+		case lexer.TOKEN_BOR:
+			datawriter.WriteString("    ;; -- bor --\n")
+			datawriter.WriteString("    pop rax\n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    or rbx, rax\n")
+			datawriter.WriteString("    push rbx\n")
+		case lexer.TOKEN_BAND:
+			datawriter.WriteString("    ;; -- band --\n")
+			datawriter.WriteString("    pop rax\n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    and rbx, rax\n")
+			datawriter.WriteString("    push rbx\n")
+		case lexer.TOKEN_OVER:
+			datawriter.WriteString("    ;; -- over --\n")
+			datawriter.WriteString("    pop rax\n")
+			datawriter.WriteString("    pop rbx\n")
+			datawriter.WriteString("    push rbx\n")
+			datawriter.WriteString("    push rax\n")
+			datawriter.WriteString("    push rbx\n")
 		}
+
 	}
 
 	datawriter.WriteString("    mov rax, 60 \n")

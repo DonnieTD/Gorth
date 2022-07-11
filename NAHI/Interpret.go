@@ -11,7 +11,7 @@ import (
 )
 
 func (n *NAH) Interpret() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 17, "./NAHI/Interpret.go", "Interpret")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 26, "./NAHI/Interpret.go", "Interpret")
 
 	var programStack utils.Stack
 	var programMemory [MEM_CAPACITY]byte
@@ -159,6 +159,46 @@ func (n *NAH) Interpret() {
 				}
 				os.Exit(1)
 			}
+		case lexer.TOKEN_LESS_THAN:
+			a, _ := programStack.Pop()
+			b, _ := programStack.Pop()
+			programStack.Push(a.(int) > b.(int))
+		case lexer.TOKEN_2DUP:
+			b, _ := programStack.Pop()
+			a, _ := programStack.Pop()
+			programStack.Push(a)
+			programStack.Push(b)
+			programStack.Push(a)
+			programStack.Push(b)
+		case lexer.TOKEN_SWAP:
+			a, _ := programStack.Pop()
+			b, _ := programStack.Pop()
+			programStack.Push(a)
+			programStack.Push(b)
+		case lexer.TOKEN_DROP:
+			programStack.Pop()
+		case lexer.TOKEN_SHL:
+			a, _ := programStack.Pop()
+			b, _ := programStack.Pop()
+			programStack.Push(b.(int) << a.(int))
+		case lexer.TOKEN_SHR:
+			a, _ := programStack.Pop()
+			b, _ := programStack.Pop()
+			programStack.Push(b.(int) >> a.(int))
+		case lexer.TOKEN_BOR:
+			a, _ := programStack.Pop()
+			b, _ := programStack.Pop()
+			programStack.Push(a.(int) | b.(int))
+		case lexer.TOKEN_BAND:
+			a, _ := programStack.Pop()
+			b, _ := programStack.Pop()
+			programStack.Push(a.(int) & b.(int))
+		case lexer.TOKEN_OVER:
+			a, _ := programStack.Pop()
+			b, _ := programStack.Pop()
+			programStack.Push(b)
+			programStack.Push(a)
+			programStack.Push(b)
 		default:
 			fmt.Println("Unreachable")
 		}

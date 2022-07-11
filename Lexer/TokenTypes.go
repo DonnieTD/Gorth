@@ -19,5 +19,14 @@ const (
 	TOKEN_STORE        = iota
 	TOKEN_SYSCALL1     = iota
 	TOKEN_SYSCALL3     = iota
+	TOKEN_2DUP         = iota
+	TOKEN_LESS_THAN    = iota
+	TOKEN_SWAP         = iota
+	TOKEN_DROP         = iota
+	TOKEN_SHR          = iota
+	TOKEN_SHL          = iota
+	TOKEN_BOR          = iota
+	TOKEN_BAND         = iota
+	TOKEN_OVER         = iota
 	COUNT_TOKENS       = iota
 )

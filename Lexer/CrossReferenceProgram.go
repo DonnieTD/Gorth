@@ -8,7 +8,7 @@ import utils "github.com/DonnieTD/NAH/Utils"
 //	it then finds that specific if and adds the
 func (lex *Lexer) CrossReferenceProgram() {
 	// NOTE ONLY BLOCKS NEED TO BE REFERENCED HERE IF ITS NOT A BLOCK INCREMENT AND MOVE ON
-	utils.CountTokensCheck(COUNT_TOKENS, 17, "./Lexer/CrossReferenceProgram.go", "CrossReferenceProgram")
+	utils.CountTokensCheck(COUNT_TOKENS, 26, "./Lexer/CrossReferenceProgram.go", "CrossReferenceProgram")
 
 	var block_reference_stack utils.Stack
 

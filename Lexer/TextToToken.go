@@ -9,7 +9,7 @@ import (
 )
 
 func (lex *Lexer) TextToToken(text string) Token {
-	utils.CountTokensCheck(COUNT_TOKENS, 17, "./Lexer/TextToToken.go", "TextToToken")
+	utils.CountTokensCheck(COUNT_TOKENS, 26, "./Lexer/TextToToken.go", "TextToToken")
 	switch text {
 	case "dump":
 		return Token{
@@ -121,6 +121,69 @@ func (lex *Lexer) TextToToken(text string) Token {
 			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_SYSCALL1,
+			Parameter:  nil,
+		}
+	case "<":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_LESS_THAN,
+			Parameter:  nil,
+		}
+	case "2dup":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_2DUP,
+			Parameter:  nil,
+		}
+	case "swap":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_SWAP,
+			Parameter:  nil,
+		}
+	case "drop":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_DROP,
+			Parameter:  nil,
+		}
+	case "shr":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_SHR,
+			Parameter:  nil,
+		}
+	case "shl":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_SHL,
+			Parameter:  nil,
+		}
+	case "bor":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_BOR,
+			Parameter:  nil,
+		}
+	case "band":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_BAND,
+			Parameter:  nil,
+		}
+	case "over":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_OVER,
 			Parameter:  nil,
 		}
 	default:
