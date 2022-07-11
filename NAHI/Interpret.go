@@ -2,6 +2,8 @@ package nahi
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 
 	lexer "github.com/DonnieTD/NAH/Lexer"
@@ -9,7 +11,7 @@ import (
 )
 
 func (n *NAH) Interpret() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 15, "./NAHI/NAHI.go:177", "Interpret")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 17, "./NAHI/Interpret.go", "Interpret")
 
 	var programStack utils.Stack
 	var programMemory [MEM_CAPACITY]byte
@@ -133,6 +135,30 @@ func (n *NAH) Interpret() {
 			programStack.Push(bytee)
 			t_token_index++
 			continue
+		case lexer.TOKEN_SYSCALL1:
+			fmt.Println("NOT IMPLEMENTED")
+		case lexer.TOKEN_SYSCALL3:
+			syscall_number, _ := programStack.Pop()
+			fd, _ := programStack.Pop()
+			buf, _ := programStack.Pop()
+			count, _ := programStack.Pop()
+			s := programMemory[buf.(int) : buf.(int)+count.(int)]
+			// WRITE SYSCALL
+			if syscall_number == 1 {
+				if fd == 1 {
+					fmt.Printf("%v", string(s))
+				} else if fd == 2 {
+					fmt.Fprintf(os.Stderr, "%v", string(s))
+				} else {
+					fmt.Println("UNKNOWN FILE DISCRIPTOR")
+				}
+			} else {
+				abs, err := filepath.Abs("./NAHI/Interpret.go")
+				if err == nil {
+					fmt.Printf("Error in: %v\n UNHANDLED SYSCALL IN SYSCALL3 \n", abs)
+				}
+				os.Exit(1)
+			}
 		default:
 			fmt.Println("Unreachable")
 		}
