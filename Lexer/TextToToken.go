@@ -9,7 +9,7 @@ import (
 )
 
 func (lex *Lexer) TextToToken(text string) Token {
-	utils.CountTokensCheck(COUNT_TOKENS, 16, "./Lexer/Lexer.go:101", "TextToToken")
+	utils.CountTokensCheck(COUNT_TOKENS, 17, "./Lexer/TextToToken.go", "TextToToken")
 	switch text {
 	case "dump":
 		return Token{
@@ -114,6 +114,13 @@ func (lex *Lexer) TextToToken(text string) Token {
 			Position:   lex.Cursor,
 			LineNumber: lex.LineNumber,
 			TokenType:  TOKEN_SYSCALL3,
+			Parameter:  nil,
+		}
+	case "syscall1":
+		return Token{
+			Position:   lex.Cursor,
+			LineNumber: lex.LineNumber,
+			TokenType:  TOKEN_SYSCALL1,
 			Parameter:  nil,
 		}
 	default:

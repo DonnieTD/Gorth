@@ -17,6 +17,7 @@ const (
 	TOKEN_MEM          = iota
 	TOKEN_LOAD         = iota
 	TOKEN_STORE        = iota
+	TOKEN_SYSCALL1     = iota
 	TOKEN_SYSCALL3     = iota
 	COUNT_TOKENS       = iota
 )

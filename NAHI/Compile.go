@@ -11,7 +11,7 @@ import (
 )
 
 func (n *NAH) Compile() {
-	utils.CountTokensCheck(lexer.COUNT_TOKENS, 16, "./NAHI/Compile.go:13", "Compile")
+	utils.CountTokensCheck(lexer.COUNT_TOKENS, 17, "./NAHI/Compile.go:13", "Compile")
 
 	if _, err := os.Stat("./" + "output.asm"); err == nil {
 		e := os.Remove("output.asm")
@@ -116,6 +116,11 @@ func (n *NAH) Compile() {
 			datawriter.WriteString("    pop rdi  \n")
 			datawriter.WriteString("    pop rsi  \n")
 			datawriter.WriteString("    pop rdx  \n")
+			datawriter.WriteString("    syscall  \n")
+		case lexer.TOKEN_SYSCALL1:
+			datawriter.WriteString("    ;;-- syscall %d -- \n")
+			datawriter.WriteString("    pop rax  \n")
+			datawriter.WriteString("    pop rdi  \n")
 			datawriter.WriteString("    syscall  \n")
 		case lexer.TOKEN_DUMP:
 			datawriter.WriteString("    ;;-- dump %d -- \n")
