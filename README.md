@@ -1,2 +1,2 @@
 # Gorth
-Porth in Go xD
+Turing complete Porth Compiler/Interpreter in Go xD
